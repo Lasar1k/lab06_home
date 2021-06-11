@@ -1,13 +1,24 @@
 language: cpp
 
+compiler:
+- gcc
+- clang
+os:
+ - linux
+
+jobs:
+  include:
+  - name: "all projects"
+    script:
+    - cmake -H. -B_build
+    - cmake --build _build
+  - name: "each CMakeLists.txt"
+
 script:
-- cd solver_application
-- cmake .
-- make
-- cd ..
-- cd hello_world_application
-- cmake .
-- make
+- source ./script
+- cd /home/travis/build/rogopl/lab06/solver_application/_build
+- cpack -G DEB
+    
 
 addons:
   apt:
@@ -16,4 +27,12 @@ addons:
     packages:
       - cmake
       - cmake-data
-      - mingw-w64
+
+deploy:
+  provider: releases
+  api_key:
+    secure: $GITHUB_TOKEN
+  file: /home/travis/build/rogopl/lab06/solver_application/solver-0.1.1-Source.tar.Z
+  skip_cleanup: true
+  on:
+    tags: true
